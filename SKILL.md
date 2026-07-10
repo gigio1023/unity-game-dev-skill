@@ -1,135 +1,170 @@
 ---
 name: unity-game-dev
-description: "Unity 3D game development with official Unity MCP tools. Scene manipulation (create/modify/delete GameObjects, wire components, bake NavMesh), C# scripting, architecture patterns (DI, SOA, FSM, GOAP), rendering optimization (URP, LOD, batching), NPC AI (NavMesh, behavior trees), camera (Cinemachine), UI (uGUI, UI Toolkit, TMP Korean/CJK), audio (FMOD), testing (EditMode/PlayMode), CI/CD (GameCI), save systems. Use when working in any Unity project, editing .cs files under Assets/, or using Unity MCP tools."
+description: >
+  Use when planning, implementing, debugging, or reviewing gameplay in an
+  existing Unity project, including C# under Assets, scenes, prefabs, packages,
+  input, UI, physics, NavMesh, Editor automation, Unity AI/MCP, Sentis,
+  ML-Agents, tests, and performance. Adapts to the project's Unity version and
+  available Editor-control capability. NOT for engine-neutral game design,
+  ordinary non-Unity C#, standalone asset creation, generic ML work, or
+  contributing to the Unity engine source.
 ---
 
-# Unity Game Dev
+# Unity Game Development
 
-## Agent Team — Auto-Spawn for Unity Development
+Deliver the smallest project-aligned result that satisfies the request. Read at
+most one primary reference for a bounded task unless it genuinely spans domains.
 
-When the user triggers this skill (e.g., `/unity-game-dev` or asks to work on a Unity game feature), follow this workflow:
+## Authority Boundary
 
-### When to Spawn Each Agent
+- Review, diagnosis, and status requests do not authorize edits, package
+  changes, Editor mutations, or saves. Implementation requests authorize
+  in-scope local edits and non-destructive validation.
+- Ask before downloading or importing assets, adding or upgrading packages,
+  changing project-wide settings, deleting assets or scenes, overwriting
+  authored content, or performing external writes.
+- Preserve unrelated worktree and unsaved Editor changes. Stop before a risky
+  save or mutation if the control path cannot distinguish them.
 
-| Situation | Spawn | Prompt File |
-|-----------|-------|-------------|
-| New feature / "만들어줘" / design needed | **game-designer** first | `agents/game-designer.md` |
-| Designer spec ready / "구현해" / code work | **gameplay-programmer** | `agents/gameplay-programmer.md` |
-| "테스트해" / "확인해" / after implementation | **qa-inspector** | `agents/qa-inspector.md` |
-| Bug report from user / "안 돼" / "왜 이래" | **qa-inspector** first, then programmer | both |
+## Establish the Project Baseline
 
-### The Flow (Designer → Programmer → QA)
+Read the smallest relevant set:
 
-```
-1. User: "대화 시스템 만들어줘"
-   → Spawn game-designer agent
-   → Designer outputs: player journey, game states, input contracts, feedback checklist
+- `ProjectSettings/ProjectVersion.txt` for the Editor version;
+- `Packages/manifest.json` and, when needed, `Packages/packages-lock.json`;
+- relevant input, rendering, physics, quality, and build settings;
+- nearby scripts, asmdefs, tests, prefabs, scenes, and their `.meta` files;
+- repository instructions and current worktree state.
 
-2. Take designer output as spec
-   → Spawn gameplay-programmer agent (pass designer spec as context)
-   → Programmer implements, checks console, saves scene
+Local configuration outranks assumptions. A manifest entry does not prove a
+package is configured, and an asset name does not prove its version or API.
+Preserve the active input backend unless migration is authorized.
 
-3. After implementation
-   → Spawn qa-inspector agent (pass designer spec + what was built)
-   → QA reports blockers/issues
+Across Unity 6.2–6.5's staged EntityId rollout, treat EntityId as current object
+identity, not a durable reference. Inspect exact APIs, reacquire handles after
+reload/session, and use documented persistent locators where needed.
 
-4. If issues found → back to step 2 (or step 1 if design is wrong)
-```
+Use [version and package checks](references/version-and-package-checks.md) when
+an API depends on Unity, package, render-pipeline, or input configuration.
 
-### How to Spawn
+## Choose an Execution Path
 
-Read the agent's prompt file, then use the **Agent tool** with the prompt content + task context:
+### Repository-only
 
-```
-Agent(
-  prompt = [read agents/game-designer.md] + "\n\nTask: " + [user's request],
-  description = "Game Designer: [feature name]"
-)
-```
+Use source and serialized-asset edits only when safe without live Editor state.
+Treat scene and prefab YAML as authored data: inspect ownership and references,
+preserve `.meta` files, and avoid speculative serialization changes.
 
-### Rules
-- **ALWAYS start with designer** for new features (prevents the "builds feature but misses UX" problem)
-- **Skip designer** only for pure bug fixes or technical tasks (NavMesh bake, compile error)
-- **QA after every implementation** — no exceptions
-- **Max 3 agents per feature cycle** (designer → programmer → QA)
-- Pass previous agent's output as context to the next agent
+### Matching Unity Editor or project-native automation
 
----
+Prefer the declared Editor and existing build, test, batchmode, or CI entry
+points. Never present an ad-hoc compile against another Unity installation,
+template, or project as Unity validation.
 
-## Quick Router — Read the right file for your task
+### Connected Editor control
 
-| What you're doing | Read this file |
-|---|---|
-| **MCP scene ops** (create objects, wire refs, bake NavMesh, RunCommand) | `advisory/mcp-recipes/SKILL.md` |
-| **Architecture** (DI, events, state machines, SOLID, asmdef) | `advisory/senior-architecture/SKILL.md` |
-| **Performance** (URP, draw calls, LOD, profiler, GC, pooling) | `advisory/rendering-performance/SKILL.md` |
-| **NPC / Physics** (NavMesh, behavior tree, GOAP, triggers, raycasts) | `advisory/physics-navmesh-ai/SKILL.md` |
-| **Camera / UI / Audio** (Cinemachine, dialogue, FMOD, saves, Korean TMP) | `advisory/camera-ui-ux/SKILL.md` |
-| **Diegetic feedback** (suspicion/tension via URP post-processing, audio, NPC behavior) | `advisory/diegetic-feedback/SKILL.md` |
-| **Free resources** (CC0 assets, Kenney, Mixamo, Freesound, license guide) | `advisory/free-resources/SKILL.md` |
-| **Testing / CI / Git** (EditMode, PlayMode, GameCI, LFS, prefabs, scenes) | `advisory/workflow-testing-ci/SKILL.md` |
-| **Project analysis** (inspect existing codebase before changes) | `advisory/project-scout/SKILL.md` |
-| **Patterns catalog** (ScriptableObject, observer, pool, etc.) | `advisory/patterns/SKILL.md` |
+Prefer a provider already approved and configured by the project. Otherwise,
+for eligible Unity 6 projects consider Unity's official MCP path before a new
+community integration. Verify current Unity access requirements and project
+policy before installing or enabling any agentic bridge; do not infer a
+third-party provider's authorization or package-signing status from popularity.
 
-Load **only the module you need**. Never preload all.
+First verify the connection, project, active scene, play/edit and console state,
+dirty assets, and available capabilities. Name capabilities—inspect hierarchy,
+read components, mutate, save, read logs—not assumed tool names.
 
----
+For scene or prefab work, inspect, make one bounded mutation, save only intended
+assets, re-inspect references and console, and use Play Mode only when needed.
 
-## Top 5 Gotchas (always relevant)
+Provider-specific setup lives in the [official Unity MCP adapter](adapters/unity-ai-mcp.md)
+and [Coplay Unity MCP adapter](adapters/coplay-unity-mcp.md). The core workflow
+must still work when neither provider is available.
 
-**1. RunCommand template (MUST follow exactly):**
-```csharp
-using UnityEngine; using UnityEditor;
-internal class CommandScript : IRunCommand {
-    public void Execute(ExecutionResult result) {
-        // RegisterObjectCreation AFTER creating
-        // RegisterObjectModification BEFORE modifying
-        // DestroyObject instead of DestroyImmediate
-        // ALWAYS check GetConsoleLogs after
-    }
-}
-```
-Class MUST be `CommandScript`. MUST be `internal`.
+## Implementation Rules
 
-**2. Input System:** If `InvalidOperationException: Input`, project uses New Input System. Use `Keyboard.current`/`Mouse.current`, not `Input.GetKey`.
+- Match existing namespaces, folder boundaries, naming, serialization patterns,
+  assembly definitions, and test conventions.
+- Keep one authoritative state owner where practical; add abstractions only for
+  a visible dependency, lifecycle, authoring, or testing need.
+- Respect Unity object lifetime and main-thread constraints. Do not treat a
+  destroyed `UnityEngine.Object` like ordinary managed null.
+- Decide whether time-dependent behavior uses scaled or unscaled time.
+- For physics, distinguish `Update` input sampling from `FixedUpdate` physics
+  work and avoid competing movement owners.
+- Profile before adding pooling, custom update loops, jobs, or render complexity.
 
-**3. NavMesh:** If NPCs don't move, `isOnNavMesh` is false. Add `NavMeshSurface` to ground + `BuildNavMesh()` via RunCommand.
+Read [architecture](references/architecture.md) for dependency and state choices,
+or [gameplay systems](references/gameplay-systems.md) for input, movement,
+camera, UI, audio, saving, and NavMesh guidance.
 
-**4. Save scene:** Always `Unity_ManageScene → Save` after MCP changes. Changes exist only in memory until saved.
+Use [content and rendering](references/content-rendering-and-media.md),
+[platform/networking/XR](references/platform-networking-and-xr.md), or
+[Editor and serialization](references/editor-serialization-and-source-control.md)
+for those domains.
 
-**5. Namespaces:** If component not found by name, use full namespace (`DreamOfOne.NPC.PoliceController`). `Image` conflicts: `using UImage = UnityEngine.UI.Image;`
+Use [AI and agent workflows](references/ai-and-agent-workflows.md) when the task
+involves Assistant, Gateway, MCP, generated assets, Sentis runtime inference, or
+ML-Agents training. Keep authoring AI, runtime inference, and training workflows
+separate; their packages, data boundaries, evidence, and failure modes differ.
 
----
+## Validation
 
-## Workflow: Query → Mutate → Verify
+Use the lowest evidence level that proves the requested result, and state the
+level reached:
 
-1. **Query:** `GetHierarchy` (depth=1), `get_components`, `GetConsoleLogs`, `FindProjectAssets`
-2. **Mutate:** `ManageGameObject`, `RunCommand` (for batch/complex), `ManageScript`
-3. **Verify:** `GetConsoleLogs`, `get_components`, Play → Stop → check logs
+1. static inspection of source and serialized references;
+2. project-native compile or script reload in the matching Unity version;
+3. EditMode tests;
+4. PlayMode or connected-Editor scenario;
+5. target-platform build or runtime profiling.
 
-**Prefer batch RunCommand over many individual MCP calls** (10x faster).
+Do not claim compile, save, package resolution, Play Mode, or build results
+without observing them. Without the exact Editor or provider, finish safe work,
+run static checks, and name the smallest remaining Editor verification.
 
----
+Read [project workflow](references/project-workflow.md) for evidence levels and
+scene mutation, or [performance and testing](references/performance-and-testing.md)
+for profiling, EditMode, PlayMode, CI, and target-device checks.
 
-## Diagnostic Scripts
+## Design and Review
 
-Run these via `Unity_RunCommand` to quickly diagnose issues:
+For feedback work, tie cues to one owned state or event. See
+[game feel](references/game-feel.md).
 
-- Scene diagnosis: `scripts/diagnose-scene.cs`
-- NavMesh check: `scripts/setup-navmesh.cs`
-- Input System check: `scripts/check-input-system.cs`
+Use independent review only for separate judgment, specialized inspection, or
+fresh verification. Delegation never expands authority.
 
----
+When a focused review would help, use these compact briefs:
 
-## Reference Docs (load only specific topic)
+- [game-design review](references/game-design-review.md)
+- [implementation review](references/implementation-review.md)
+- [QA review](references/qa-review.md)
 
-| Topic | File | Size |
-|-------|------|------|
-| Scripting | `references/scripting.md` | small |
-| Physics | `references/physics.md` | large |
-| UI | `references/ui.md` | small |
-| Rendering | `references/rendering.md` | medium |
-| Editor | `references/editor.md` | small |
-| Scene Management | `references/scene_management.md` | medium |
-| Shaders | `references/shaders.md` | **92KB — selective** |
-| Other | `references/other.md` | **216KB — selective** |
+For third-party content, verify the exact asset, current source, and license;
+do not describe an asset as “risk-free.” See
+[assets and licensing](references/assets-and-licensing.md).
+
+## Output
+
+Lead with the user-visible result. Name changed files/assets or review findings,
+the validation and evidence level observed, material assumptions, unresolved
+Editor/runtime checks, and the smallest next action when something remains.
+
+## Gotchas
+
+- Moving or regenerating a Unity asset without its `.meta` file changes GUID
+  identity and can break serialized references.
+- `Time.timeScale = 0` does not pause unscaled time, animation modes, audio, or
+  every custom system.
+- Text edits to scene or prefab YAML can create valid-looking but broken object
+  references; prefer Editor-backed mutation when relationships are non-trivial.
+- NavMesh behavior depends on the installed AI Navigation package, baked data,
+  agent type, area mask, and runtime placement—not merely a `NavMeshAgent`.
+- Sentis may appear under the package ID `com.unity.ai.inference` while runtime
+  code uses the `Unity.InferenceEngine` namespace; inspect the installed version
+  instead of renaming from product display text.
+- Unity Assistant skills, Codex skills, and Claude Code skills can share a
+  `SKILL.md` shape but use different discovery locations and optional metadata.
+  Do not claim one installation covers all three runtimes.
+- A clean static review is not evidence that the Editor compiled or that the
+  runtime behavior works.
