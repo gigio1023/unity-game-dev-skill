@@ -16,11 +16,28 @@ The following shallow clones were created on 2026-07-10:
 | `.research/build/Cinemachine` | [Cinemachine](https://github.com/Unity-Technologies/com.unity.cinemachine) | `cecef108f04547f216c5c81f866c9c8c8e2c8157` | Current development source and `Documentation~`; package reports 3.1.8-pre.1 |
 | `.research/build/Graphics` | [Graphics](https://github.com/Unity-Technologies/Graphics) | `a7e4c051d256a781ab362c64316b125a1e104694` | Sparse checkout of Core/URP/HDRP/Shader Graph/VFX docs; packages report 17.6.0 |
 | `.research/build/Unity-Skills` | [Besty0728/Unity-Skills](https://github.com/Besty0728/Unity-Skills) | `f6f09e6bb001aaf0c16dc2309062edfd10d124b7` | Community upstream and legacy-content comparison only |
+| `.research/build/coplay-unity-mcp` | [CoplayDev/unity-mcp](https://github.com/CoplayDev/unity-mcp) | `484937c4a75709f4c632b15d933e79556c3c3a2d` | Current v10-era provider code, transport/reload behavior, tool groups, tests, and bundled skill |
+| `.research/build/ivan-unity-mcp` | [IvanMurzak/Unity-MCP](https://github.com/IvanMurzak/Unity-MCP) | `dae6da830de3cda2a6aa80b123d2ef7483a3ebd4` | Generated per-tool skill approach, CLI setup, async completion, and multi-version tests |
+| `.research/build/akiojin-unity-cli` | [akiojin/unity-cli](https://github.com/akiojin/unity-cli) | `8daf7fa8cee861686b3ade87fa965f89f43f99fe` | Cross-harness workflow-skill layout and executable 22-rule skill linter |
+| `.research/build/signal-loop-unity-code-mcp` | [Signal-Loop/UnityCodeMCPServer](https://github.com/Signal-Loop/UnityCodeMCPServer) | `1bdc94ffda6b6f7af5adb5b5f2eb4b6ee44ec2e4` | Arbitrary-C# and closed-loop game-playing skill comparison |
+| `.research/build/ml-agents` | [Unity-Technologies/ml-agents](https://github.com/Unity-Technologies/ml-agents) | `a2777719560e4676be99e2ea128c5eb1fbeb3dbb` | Sparse Release 23 checkout; Unity package 4.0.0 and Inference Engine dependency boundary |
+| `.research/build/sentis-samples` | [Unity-Technologies/sentis-samples](https://github.com/Unity-Technologies/sentis-samples) | `d44c130a802dad351426d58c0931319e1731ca0a` | Official sample code for `com.unity.ai.inference` and `Unity.InferenceEngine` runtime usage |
+| `.research/build/unity-ar-skills` | [janifica/unity-ar-skills](https://github.com/janifica/unity-ar-skills) | `c4a7ba7df46110512aa3bb1c9663f697099b3156` | Focused Unity AR skill structure and version-sensitive reference comparison |
 
 These are moving development branches, not compatibility guarantees for a
 project. In particular, UnityCsReference HEAD is an alpha editor line and
 Cinemachine HEAD is a pre-release package. Match the project's exact editor and
 package versions before using an API.
+
+`UnityCsReference` here means only Unity's public reference repository under its
+current license. Never copy subscription, paid, or confidential Unity source
+into these checkouts or expose it to an agent unless current Editor Source Code
+[Terms](https://unity.com/legal/editor-source-code-terms) and organization
+authorization explicitly permit that use.
+
+Additional comparison-only checkouts include AnkleBreaker Unity MCP,
+isuzu-shiranui UnityMCP, Jahro's Unity agent skills, and wshobson/agents. They
+inform ecosystem comparison but are not technical authorities for this skill.
 
 ## Recreate the checkout
 
@@ -33,6 +50,13 @@ git clone --depth 1 --filter=blob:none https://github.com/Unity-Technologies/Inp
 git clone --depth 1 --filter=blob:none https://github.com/Unity-Technologies/com.unity.cinemachine.git .research/build/Cinemachine
 git clone --depth 1 --filter=blob:none --sparse https://github.com/Unity-Technologies/Graphics.git .research/build/Graphics
 git clone --depth 1 --filter=blob:none https://github.com/Besty0728/Unity-Skills.git .research/build/Unity-Skills
+git clone --depth 1 --filter=blob:none https://github.com/CoplayDev/unity-mcp.git .research/build/coplay-unity-mcp
+git clone --depth 1 --filter=blob:none https://github.com/IvanMurzak/Unity-MCP.git .research/build/ivan-unity-mcp
+git clone --depth 1 --filter=blob:none https://github.com/akiojin/unity-cli.git .research/build/akiojin-unity-cli
+git clone --depth 1 --filter=blob:none https://github.com/Signal-Loop/UnityCodeMCPServer.git .research/build/signal-loop-unity-code-mcp
+git clone --depth 1 --filter=blob:none --branch release_23 --sparse https://github.com/Unity-Technologies/ml-agents.git .research/build/ml-agents
+git clone --depth 1 --filter=blob:none --sparse https://github.com/Unity-Technologies/sentis-samples.git .research/build/sentis-samples
+git clone --depth 1 --filter=blob:none https://github.com/janifica/unity-ar-skills.git .research/build/unity-ar-skills
 ```
 
 Then select only the Graphics documentation trees:
@@ -44,6 +68,9 @@ git -C .research/build/Graphics sparse-checkout set \
   Packages/com.unity.render-pipelines.high-definition/Documentation~ \
   Packages/com.unity.shadergraph/Documentation~ \
   Packages/com.unity.visualeffectgraph/Documentation~
+git -C .research/build/ml-agents sparse-checkout set com.unity.ml-agents docs
+git -C .research/build/sentis-samples sparse-checkout set \
+  Documentation ChatSample BoardGameAISample TextToSpeechSample
 ```
 
 ## Source priority
@@ -73,6 +100,13 @@ git -C .research/build/InputSystem pull --ff-only
 git -C .research/build/Cinemachine pull --ff-only
 git -C .research/build/Graphics pull --ff-only
 git -C .research/build/Unity-Skills pull --ff-only
+git -C .research/build/coplay-unity-mcp pull --ff-only
+git -C .research/build/ivan-unity-mcp pull --ff-only
+git -C .research/build/akiojin-unity-cli pull --ff-only
+git -C .research/build/signal-loop-unity-code-mcp pull --ff-only
+git -C .research/build/ml-agents pull --ff-only
+git -C .research/build/sentis-samples pull --ff-only
+git -C .research/build/unity-ar-skills pull --ff-only
 ```
 
 After refreshing, record new commit IDs and dates here only when a new skill

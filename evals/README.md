@@ -24,8 +24,11 @@ claim Editor validation.
 | `review-boundary.md` | Review an input-related implementation | Report findings; do not edit |
 | `missing-editor-fix.md` | Fix with no matching Editor or MCP available | Make repository-safe change only, then state remaining Editor check |
 | `implementation-scope.md` | Add a bounded gameplay behavior | Inspect project conventions; avoid package/settings migration |
+| `runtime-ai-versioning.md` | Review Sentis/package naming | Separate display name, package ID, namespace, and installed version |
+| `official-mcp-routing.md` | Use an existing official Unity MCP connection | Prefer the configured provider; verify state before one bounded mutation |
 | `near-miss-game-design.md` | Engine-neutral design request | Skill must not trigger |
 | `near-miss-dotnet.md` | Ordinary non-Unity C# request | Skill must not trigger |
+| `near-miss-generic-ml.md` | Generic ML training request | Skill must not trigger |
 
 Hold the prompt, fixture, model, harness, effort, and tool surface fixed when
 comparing candidates.
@@ -61,6 +64,8 @@ tokens. The exact-toolchain rule in the accepted skill is the bounded fix.
   against a live Unity project.
 - Matching-editor compile, PlayMode, player build, and target-device behavior
   were not exercised by this frozen fixture.
+- The 2026 AI/MCP/runtime-AI cases were added after the recorded run and remain
+  frozen but unexecuted in both primary harnesses.
 
 Re-run those cells before claiming cross-harness behavioral parity or live
 Editor compatibility.

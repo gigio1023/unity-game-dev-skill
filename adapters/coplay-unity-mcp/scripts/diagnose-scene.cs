@@ -1,129 +1,219 @@
-// Coplay IRunCommand example: read-only scene diagnostic.
-// Adapt to the installed provider and Unity version before running.
-
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.AI;
-
-internal class CommandScript : IRunCommand
+// Coplay v10 execute_code method body. Read-only; return the result object.
+var report = new Dictionary<string, object>();
+var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+report["activeScene"] = new Dictionary<string, object>
 {
-    public void Execute(ExecutionResult result)
+    { "name", activeScene.name },
+    { "path", activeScene.path },
+    { "loaded", activeScene.isLoaded },
+    { "dirty", activeScene.isDirty }
+};
+
+var agents = new List<Dictionary<string, object>>();
+var allAgents = Resources.FindObjectsOfTypeAll<UnityEngine.AI.NavMeshAgent>();
+foreach (var agent in allAgents)
+{
+    if (!agent.gameObject.scene.IsValid() || !agent.gameObject.scene.isLoaded)
     {
-        result.Log("=== SCENE DIAGNOSTIC ===");
+        continue;
+    }
 
-        var agents = Object.FindObjectsByType<NavMeshAgent>(
-            FindObjectsSortMode.None);
-        result.Log($"NavMeshAgents: {agents.Length}");
-        foreach (var agent in agents)
-        {
-            var pathStatus = agent.isOnNavMesh
-                ? agent.pathStatus.ToString()
-                : "Unavailable (agent is off NavMesh)";
-            result.Log(
-                $"  {agent.name}: onNavMesh={agent.isOnNavMesh}, " +
-                $"position={agent.transform.position}, pathStatus={pathStatus}");
-        }
-
-        var colliders = Object.FindObjectsByType<Collider>(
-            FindObjectsSortMode.None);
-        var triggerCount = 0;
-        foreach (var collider in colliders)
-        {
-            if (!collider.isTrigger)
-            {
-                continue;
-            }
-
-            triggerCount++;
-            var rigidbody = collider.attachedRigidbody;
-            if (rigidbody == null)
-            {
-                result.LogWarning(
-                    $"Trigger '{collider.name}' has no attached Rigidbody. " +
-                    "Its collision counterpart may still own one.");
-            }
-            else
-            {
-                result.Log(
-                    $"Trigger '{collider.name}': attached Rigidbody " +
-                    $"kinematic={rigidbody.isKinematic}");
-            }
-        }
-        result.Log($"Triggers: {triggerCount}");
-
-        var canvases = Object.FindObjectsByType<Canvas>(
-            FindObjectsSortMode.None);
-        result.Log($"Canvases: {canvases.Length}");
-        foreach (var canvas in canvases)
-        {
-            result.Log(
-                $"  {canvas.name}: mode={canvas.renderMode}, " +
-                $"order={canvas.sortingOrder}, " +
-                $"active={canvas.gameObject.activeInHierarchy}");
-        }
-
-        var cameras = Object.FindObjectsByType<Camera>(
-            FindObjectsSortMode.None);
-        result.Log($"Cameras: {cameras.Length}");
-        foreach (var camera in cameras)
-        {
-            result.Log(
-                $"  {camera.name}: tag={camera.tag}, " +
-                $"enabled={camera.enabled}, depth={camera.depth}");
-        }
-
-        var settings = AssetDatabase.LoadAllAssetsAtPath(
-            "ProjectSettings/ProjectSettings.asset");
-        if (settings.Length > 0)
-        {
-            var serializedSettings = new SerializedObject(settings[0]);
-            var activeInputHandler =
-                serializedSettings.FindProperty("activeInputHandler");
-            if (activeInputHandler == null)
-            {
-                result.LogWarning(
-                    "activeInputHandler was not found for this Unity version.");
-            }
-            else
-            {
-                string[] modes = { "Legacy", "Input System", "Both" };
-                var mode = activeInputHandler.intValue;
-                var label = mode >= 0 && mode < modes.Length
-                    ? modes[mode]
-                    : "Unknown";
-                result.Log($"Input Handling: {label} ({mode})");
-            }
-        }
-
-        var controllers = Object.FindObjectsByType<CharacterController>(
-            FindObjectsSortMode.None);
-        foreach (var controller in controllers)
-        {
-            result.Log(
-                $"CharacterController '{controller.name}': " +
-                $"grounded={controller.isGrounded}, " +
-                $"position={controller.transform.position}");
-        }
-
-        var gameObjects = Object.FindObjectsByType<GameObject>(
-            FindObjectsSortMode.None);
-        var missingCount = 0;
-        foreach (var gameObject in gameObjects)
-        {
-            foreach (var component in gameObject.GetComponents<Component>())
-            {
-                if (component != null)
-                {
-                    continue;
-                }
-
-                missingCount++;
-                result.LogWarning(
-                    $"Missing component on '{gameObject.name}'.");
-            }
-        }
-
-        result.Log($"Missing components: {missingCount}");
-        result.Log("=== DIAGNOSTIC COMPLETE ===");
+    var item = new Dictionary<string, object>();
+    item["name"] = agent.name;
+    item["scene"] = agent.gameObject.scene.name;
+    item["position"] = agent.transform.position.ToString("F3");
+    item["enabled"] = agent.enabled;
+    item["onNavMesh"] = agent.isOnNavMesh;
+    item["pathStatus"] = agent.isOnNavMesh
+        ? agent.pathStatus.ToString()
+        : "Unavailable";
+    agents.Add(item);
+    if (agents.Count >= 20)
+    {
+        break;
     }
 }
+report["navMeshAgentCount"] = allAgents.Count(agent =>
+    agent.gameObject.scene.IsValid() && agent.gameObject.scene.isLoaded);
+report["navMeshAgents"] = agents;
+
+var triggerCount = 0;
+var triggersWithoutAttachedBody = 0;
+var loadedColliders = Resources.FindObjectsOfTypeAll<Collider>();
+foreach (var collider in loadedColliders)
+{
+    if (!collider.gameObject.scene.IsValid() ||
+        !collider.gameObject.scene.isLoaded || !collider.isTrigger)
+    {
+        continue;
+    }
+
+    triggerCount++;
+    if (collider.attachedRigidbody == null)
+    {
+        triggersWithoutAttachedBody++;
+    }
+}
+report["triggerCount"] = triggerCount;
+report["triggersWithoutAttachedRigidbody"] = triggersWithoutAttachedBody;
+
+var canvases = new List<Dictionary<string, object>>();
+foreach (var canvas in Resources.FindObjectsOfTypeAll<Canvas>())
+{
+    if (!canvas.gameObject.scene.IsValid() || !canvas.gameObject.scene.isLoaded)
+    {
+        continue;
+    }
+    canvases.Add(new Dictionary<string, object>
+    {
+        { "name", canvas.name },
+        { "mode", canvas.renderMode.ToString() },
+        { "sortingOrder", canvas.sortingOrder },
+        { "active", canvas.gameObject.activeInHierarchy }
+    });
+    if (canvases.Count >= 20)
+    {
+        break;
+    }
+}
+report["canvases"] = canvases;
+
+var cameras = new List<Dictionary<string, object>>();
+foreach (var camera in Resources.FindObjectsOfTypeAll<Camera>())
+{
+    if (!camera.gameObject.scene.IsValid() || !camera.gameObject.scene.isLoaded)
+    {
+        continue;
+    }
+    cameras.Add(new Dictionary<string, object>
+    {
+        { "name", camera.name },
+        { "tag", camera.tag },
+        { "enabled", camera.enabled },
+        { "depth", camera.depth }
+    });
+    if (cameras.Count >= 20)
+    {
+        break;
+    }
+}
+report["cameras"] = cameras;
+
+var controllers = new List<Dictionary<string, object>>();
+foreach (var controller in Resources.FindObjectsOfTypeAll<CharacterController>())
+{
+    if (!controller.gameObject.scene.IsValid() ||
+        !controller.gameObject.scene.isLoaded)
+    {
+        continue;
+    }
+    controllers.Add(new Dictionary<string, object>
+    {
+        { "name", controller.name },
+        { "enabled", controller.enabled },
+        { "grounded", controller.isGrounded },
+        { "position", controller.transform.position.ToString("F3") }
+    });
+    if (controllers.Count >= 20)
+    {
+        break;
+    }
+}
+report["characterControllers"] = controllers;
+
+var inputMode = "Unknown";
+try
+{
+    var property = typeof(PlayerSettings).GetProperty(
+        "activeInputHandler",
+        BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+    if (property == null)
+    {
+        property = typeof(PlayerSettings).GetProperty(
+            "activeInputHandling",
+            BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+    }
+    if (property != null)
+    {
+        var numericValue = Convert.ToInt32(property.GetValue(null, null));
+        inputMode = numericValue == 0 ? "Legacy Input Manager" :
+            numericValue == 1 ? "Input System Package" :
+            numericValue == 2 ? "Both" : "Unknown (" + numericValue + ")";
+    }
+}
+catch (Exception exception)
+{
+    inputMode = "Unavailable: " + exception.GetType().Name;
+}
+
+if (inputMode.StartsWith("Unknown") || inputMode.StartsWith("Unavailable"))
+{
+    try
+    {
+        SerializedObject serializedSettings = null;
+        var getSerializedObject = typeof(PlayerSettings).GetMethod(
+            "GetSerializedObject",
+            BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+        if (getSerializedObject != null)
+        {
+            serializedSettings = getSerializedObject.Invoke(null, null)
+                as SerializedObject;
+        }
+
+        if (serializedSettings == null)
+        {
+            var settingsAssets = AssetDatabase.LoadAllAssetsAtPath(
+                "ProjectSettings/ProjectSettings.asset");
+            if (settingsAssets.Length > 0)
+            {
+                serializedSettings = new SerializedObject(settingsAssets[0]);
+            }
+        }
+
+        if (serializedSettings != null)
+        {
+            var serializedProperty =
+                serializedSettings.FindProperty("activeInputHandler") ??
+                serializedSettings.FindProperty("activeInputHandling");
+            if (serializedProperty != null)
+            {
+                var numericValue = serializedProperty.intValue;
+                inputMode = numericValue == 0 ? "Legacy Input Manager" :
+                    numericValue == 1 ? "Input System Package" :
+                    numericValue == 2 ? "Both" :
+                    "Unknown (" + numericValue + ")";
+            }
+        }
+    }
+    catch (Exception exception)
+    {
+        inputMode = "Unavailable: " + exception.GetType().Name;
+    }
+}
+report["activeInputHandling"] = inputMode;
+
+var missingComponents = new List<string>();
+var missingCount = 0;
+foreach (var gameObject in Resources.FindObjectsOfTypeAll<GameObject>())
+{
+    if (!gameObject.scene.IsValid() || !gameObject.scene.isLoaded)
+    {
+        continue;
+    }
+    foreach (var component in gameObject.GetComponents<Component>())
+    {
+        if (component != null)
+        {
+            continue;
+        }
+        missingCount++;
+        if (missingComponents.Count < 20)
+        {
+            missingComponents.Add(gameObject.scene.name + ":" + gameObject.name);
+        }
+    }
+}
+report["missingComponentCount"] = missingCount;
+report["missingComponentObjects"] = missingComponents;
+
+return report;

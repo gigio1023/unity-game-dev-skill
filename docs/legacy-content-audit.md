@@ -36,6 +36,16 @@ knowledge as concise, version-aware references.
   snapshot to a `2.1.0`-era REST/provider package. It remains useful for topic
   discovery, but its tool contract must not leak into this provider-neutral
   skill.
+- Unity now ships an Assistant package with its own skills, AI Gateway, and
+  official Unity MCP path. Authoring AI must be kept separate from Sentis
+  runtime inference and ML-Agents training; restoring one old catch-all AI page
+  would collapse three different version and evidence boundaries.
+- Unity 6.2–6.5 stages the transition from InstanceID assumptions toward
+  EntityId. Long-lived Editor automation must reacquire session handles and use
+  documented persistent locators rather than preserving old integer-ID recipes.
+- Coplay v10 replaced the legacy `IRunCommand` diagnostic shape with an
+  in-memory method-body execution surface. The previous adapter examples were
+  therefore repaired instead of being retained merely because they were local.
 
 ## Coverage disposition
 
@@ -49,6 +59,7 @@ knowledge as concise, version-aware references.
 | `references/platform.md`, `networking.md`, `services.md`, `xr.md` | Misgrouped/raw snapshots remain deleted; platform builds, multiplayer authority, services, and XR version boundaries restored | [platform-networking-and-xr.md](../references/platform-networking-and-xr.md) |
 | `references/scripting.md`, `editor.md`, `getting_started.md` | Raw snapshots remain deleted; lifecycle, async, asmdef, Editor/source-control, and exact-toolchain rules retained | [architecture.md](../references/architecture.md), [project-workflow.md](../references/project-workflow.md), [editor-serialization-and-source-control.md](../references/editor-serialization-and-source-control.md) |
 | `references/optimization.md` | Raw snapshot remains deleted; profiling, memory, rendering, test, CI, and target evidence retained | [performance-and-testing.md](../references/performance-and-testing.md) |
+| Legacy AI/advisory material | Undated catch-all guidance remains deleted; Assistant/Gateway/MCP, Sentis, and ML-Agents are separated by package and lifecycle | [ai-and-agent-workflows.md](../references/ai-and-agent-workflows.md), [version-and-package-checks.md](../references/version-and-package-checks.md) |
 | `references/index.md`, `other.md` | Duplicated catch-all indexes remain deleted; `SKILL.md` is the bounded router | [SKILL.md](../SKILL.md) |
 
 ## Advisory modules

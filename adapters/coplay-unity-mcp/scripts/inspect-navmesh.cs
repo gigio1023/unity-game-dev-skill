@@ -1,47 +1,52 @@
-// Coplay IRunCommand example: read-only NavMesh inspection.
-// This does not add components, bake data, or modify the scene.
-
-using UnityEngine;
-using UnityEngine.AI;
-
-internal class CommandScript : IRunCommand
+// Coplay v10 execute_code method body. Does not bake or modify NavMesh data.
+var report = new Dictionary<string, object>();
+var triangulation = UnityEngine.AI.NavMesh.CalculateTriangulation();
+report["triangulation"] = new Dictionary<string, object>
 {
-    public void Execute(ExecutionResult result)
+    { "vertices", triangulation.vertices.Length },
+    { "indices", triangulation.indices.Length },
+    { "areas", triangulation.areas.Length }
+};
+
+var details = new List<Dictionary<string, object>>();
+var total = 0;
+var onMesh = 0;
+var offMesh = 0;
+foreach (var agent in Resources.FindObjectsOfTypeAll<UnityEngine.AI.NavMeshAgent>())
+{
+    if (!agent.gameObject.scene.IsValid() || !agent.gameObject.scene.isLoaded)
     {
-        result.Log("=== NAVMESH INSPECTION ===");
+        continue;
+    }
 
-        var triangulation = NavMesh.CalculateTriangulation();
-        result.Log(
-            $"Triangulation: vertices={triangulation.vertices.Length}, " +
-            $"indices={triangulation.indices.Length}, " +
-            $"areas={triangulation.areas.Length}");
+    total++;
+    if (agent.isOnNavMesh)
+    {
+        onMesh++;
+    }
+    else
+    {
+        offMesh++;
+    }
 
-        var agents = Object.FindObjectsByType<NavMeshAgent>(
-            FindObjectsSortMode.None);
-        var onMesh = 0;
-        var offMesh = 0;
-        foreach (var agent in agents)
+    if (details.Count < 30)
+    {
+        details.Add(new Dictionary<string, object>
         {
-            if (agent.isOnNavMesh)
-            {
-                onMesh++;
-                result.Log(
-                    $"  {agent.name}: on NavMesh, " +
-                    $"agentType={agent.agentTypeID}, areaMask={agent.areaMask}");
-            }
-            else
-            {
-                offMesh++;
-                result.LogWarning(
-                    $"  {agent.name}: off NavMesh at " +
-                    $"{agent.transform.position}, " +
-                    $"agentType={agent.agentTypeID}, areaMask={agent.areaMask}");
-            }
-        }
-
-        result.Log(
-            $"Agents: {onMesh} on NavMesh, {offMesh} off NavMesh.");
-        result.Log("No scene or NavMesh data was modified.");
-        result.Log("=== INSPECTION COMPLETE ===");
+            { "name", agent.name },
+            { "scene", agent.gameObject.scene.name },
+            { "enabled", agent.enabled },
+            { "onNavMesh", agent.isOnNavMesh },
+            { "position", agent.transform.position.ToString("F3") },
+            { "agentTypeId", agent.agentTypeID },
+            { "areaMask", agent.areaMask }
+        });
     }
 }
+
+report["agentCount"] = total;
+report["agentsOnNavMesh"] = onMesh;
+report["agentsOffNavMesh"] = offMesh;
+report["agents"] = details;
+report["mutated"] = false;
+return report;
