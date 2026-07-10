@@ -7,36 +7,42 @@ version-appropriate APIs, implement gameplay without fighting the project's
 architecture, and report only the validation it actually observed. Live Editor
 control is optional rather than assumed.
 
-## Install
+## Local Codex setup
 
-### Codex
-
-```bash
-npx skills add gigio1023/unity-game-dev-skill --skill unity-game-dev --agent codex -g -y
-```
-
-See [the Codex install guide](.codex/INSTALL.md) for a manual symlink option.
-
-### Claude Code
+Keep this repository as the canonical source and expose it to Codex with one
+user-level symlink:
 
 ```bash
-npx skills add gigio1023/unity-game-dev-skill --skill unity-game-dev --agent claude-code -g -y
+mkdir -p ~/.agents/skills
+ln -s /absolute/path/to/unity-game-dev-skill ~/.agents/skills/unity-game-dev
 ```
 
-See [the Claude Code install guide](.claude/INSTALL.md) for a manual symlink
-option.
+Do not run the command over an existing path. Verify the link first when
+reinstalling:
 
-If the repository is private, authenticate Git or the GitHub CLI before using
-the installer. The installer must be able to clone the repository.
+```bash
+test -L ~/.agents/skills/unity-game-dev
+readlink ~/.agents/skills/unity-game-dev
+```
+
+Codex scans `$HOME/.agents/skills` and follows symlinked skill folders, so no
+copy, `npx skills add` installation, or Codex-specific package directory is
+needed. See [the Codex install guide](.codex/INSTALL.md) and the
+[official skill location documentation](https://learn.chatgpt.com/docs/build-skills#where-to-save-skills).
+
+The portable package can also be linked into Claude Code's user skill directory
+when cross-harness testing is needed; that optional path is documented in
+[the Claude Code guide](.claude/INSTALL.md).
 
 ## Design
 
-The package has three layers:
+The package has four layers:
 
 - `SKILL.md` is the portable task contract shared by both harnesses.
 - `references/` contains focused Unity guidance loaded only when the task needs
   it.
 - `adapters/` contains optional provider-specific Editor-control details.
+- `docs/` records the deletion audit and ignored maintenance-source checkouts.
 
 The portable core does not require a particular MCP provider, built-in tool
 name, invocation syntax, model, or subagent topology. It adapts to the Unity
@@ -61,6 +67,9 @@ The modern package:
 - uses concise references instead of raw documentation dumps;
 - records frozen evaluation cases and known untested surfaces.
 
+The raw dumps remain deleted, but their meaningful topic coverage was restored
+after a source audit. See [the legacy content audit](docs/legacy-content-audit.md).
+
 ## Structure
 
 ```text
@@ -72,9 +81,14 @@ unity-game-dev-skill/
 ├── evals/
 │   ├── README.md
 │   └── fixtures/minimal-unity/
+├── docs/
+│   ├── legacy-content-audit.md
+│   └── research-sources.md
 ├── references/
 │   ├── architecture.md
+│   ├── content-rendering-and-media.md
 │   ├── gameplay-systems.md
+│   ├── platform-networking-and-xr.md
 │   ├── project-workflow.md
 │   └── ...
 ├── .claude/INSTALL.md

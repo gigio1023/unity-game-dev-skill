@@ -11,8 +11,8 @@ description: >
 
 # Unity Game Development
 
-Deliver the smallest project-aligned Unity result that satisfies the request.
-Ground decisions in the repository and prove only what the available Unity
+Deliver the smallest project-aligned result that satisfies the request.
+Ground decisions in the repository and prove only what the Unity
 version, Editor access, and tests actually establish.
 
 ## Quick Path
@@ -108,6 +108,11 @@ still work when no Editor provider is available.
 Read [architecture](references/architecture.md) for dependency and state choices,
 or [gameplay systems](references/gameplay-systems.md) for input, movement,
 camera, UI, audio, saving, and NavMesh guidance.
+
+Use [content, rendering, and media](references/content-rendering-and-media.md)
+for asset/media pipelines; [platform, networking, services, and XR](references/platform-networking-and-xr.md)
+for target integrations; and [Editor, serialization, and source control](references/editor-serialization-and-source-control.md)
+for YAML, Git/LFS, merge, and CI rules.
 
 ## Validation
 

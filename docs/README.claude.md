@@ -1,9 +1,11 @@
 # Claude Code
 
-Install the repository root as the `unity-game-dev` skill:
+The primary local setup is the Codex `~/.agents/skills` symlink. For an
+explicit Claude Code evaluation, link the same repository root separately:
 
 ```bash
-npx skills add gigio1023/unity-game-dev-skill --skill unity-game-dev --agent claude-code -g -y
+mkdir -p ~/.claude/skills
+ln -s /absolute/path/to/unity-game-dev-skill ~/.claude/skills/unity-game-dev
 ```
 
 The shared `SKILL.md` contains no Claude-only invocation, hook, tool, or

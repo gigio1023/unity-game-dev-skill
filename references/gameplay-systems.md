@@ -36,6 +36,13 @@ Match uGUI, UI Toolkit, TextMesh Pro, or the project's combination. Confirm
 EventSystem/input integration, sorting, scaling, safe area, navigation, focus,
 localization, and CJK font coverage when relevant.
 
+Inspect the installed Localization package and existing string/asset tables
+before choosing keys or loading behavior. Preserve locale fallback, plural and
+smart-string rules, font fallbacks, right-to-left needs, and dynamic layout.
+Where the Unity version and UI stack support accessibility APIs, verify the
+actual screen-reader/focus path; always retain non-color cues, reduced-motion
+options, and controller/keyboard navigation as applicable.
+
 Pause UI must distinguish scaled and unscaled time. Decide whether input,
 animation, audio, physics, AI, and transitions continue while paused.
 

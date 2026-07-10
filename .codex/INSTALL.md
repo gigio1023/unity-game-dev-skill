@@ -1,20 +1,24 @@
-# Install for Codex
+# Link for Codex
 
-Preferred:
-
-```bash
-npx skills add gigio1023/unity-game-dev-skill --skill unity-game-dev --agent codex -g -y
-```
-
-For a manual install, clone the repository to a stable location and link the
-package root:
+From a stable clone of this repository, create a user-level skill symlink:
 
 ```bash
-git clone https://github.com/gigio1023/unity-game-dev-skill.git ~/.local/share/unity-game-dev-skill
 mkdir -p ~/.agents/skills
-ln -s ~/.local/share/unity-game-dev-skill ~/.agents/skills/unity-game-dev
+ln -s /absolute/path/to/unity-game-dev-skill ~/.agents/skills/unity-game-dev
 ```
 
-If the repository is private, authenticate Git before cloning. Replace an
-existing destination intentionally rather than overwriting it blindly, then
-restart Codex so skill discovery is refreshed.
+Do not overwrite an existing file or directory. For an existing symlink, inspect
+the target before replacing it:
+
+```bash
+test -L ~/.agents/skills/unity-game-dev
+readlink ~/.agents/skills/unity-game-dev
+```
+
+Codex automatically scans `$HOME/.agents/skills` and follows symlinked skill
+folders. The repository root contains `SKILL.md`, so the link target is the
+installable package; no copy, `npx` installation, or `~/.codex/skills` path is
+needed.
+
+Open a new task or refresh skill discovery after creating the link if the
+current task's available-skill list was established before installation.

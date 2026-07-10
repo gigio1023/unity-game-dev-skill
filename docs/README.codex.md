@@ -1,13 +1,16 @@
 # Codex
 
-Install the repository root as the `unity-game-dev` skill:
+Link the repository root into Codex's user skill directory:
 
 ```bash
-npx skills add gigio1023/unity-game-dev-skill --skill unity-game-dev --agent codex -g -y
+mkdir -p ~/.agents/skills
+ln -s /absolute/path/to/unity-game-dev-skill ~/.agents/skills/unity-game-dev
 ```
 
-The shared `SKILL.md` contains no Codex-only invocation, policy, tool, or
-subagent requirement. Optional Editor providers are documented under
+Codex scans `~/.agents/skills` automatically and follows symlink targets. No
+copy or installer command is required. The shared `SKILL.md` contains no
+Codex-only tool or subagent requirement; optional Editor providers are under
 `adapters/`.
 
-For manual installation, follow [`.codex/INSTALL.md`](../.codex/INSTALL.md).
+For link verification and refresh notes, follow
+[`.codex/INSTALL.md`](../.codex/INSTALL.md).

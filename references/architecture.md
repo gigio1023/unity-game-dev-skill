@@ -47,6 +47,22 @@ booleans. Prefer one authoritative state and explicit projections.
 - Make domain reload, static state, and enter-play-mode settings part of the
   analysis when static initialization matters.
 
+Choose among coroutines, `UnityEngine.Awaitable`, `Task`, UniTask, and events
+from the exact Unity version and existing dependencies. Do not introduce
+UniTask merely for style or assume current Awaitable behavior exists in an older
+editor. Define cancellation, exception observation, continuation thread, and
+whether a returned awaitable/operation can be awaited more than once.
+
+## GameObject and Entities projects
+
+Detect whether the project is GameObject/MonoBehaviour, Entities/DOTS, or an
+intentional hybrid. For Entities, inspect the installed Entities, Collections,
+Jobs, Burst, Physics, and NetCode versions plus baking/SubScene conventions.
+Keep managed Unity-object access outside Burst/jobs and define the bridge
+between entity and GameObject ownership. Do not migrate a feature to ECS merely
+because it has many objects; require measured scale or an established DOTS
+architecture.
+
 ## Assembly definitions and tests
 
 Add or change asmdefs only when the project already uses them or the dependency

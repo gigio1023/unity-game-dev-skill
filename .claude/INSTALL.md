@@ -1,20 +1,13 @@
-# Install for Claude Code
+# Optional link for Claude Code
 
-Preferred:
-
-```bash
-npx skills add gigio1023/unity-game-dev-skill --skill unity-game-dev --agent claude-code -g -y
-```
-
-For a manual install, clone the repository to a stable location and link the
-package root:
+The supported local setup for this repository is the Codex symlink documented
+in `.codex/INSTALL.md`. For an explicit cross-harness evaluation, the same
+portable package can also be linked into Claude Code:
 
 ```bash
-git clone https://github.com/gigio1023/unity-game-dev-skill.git ~/.local/share/unity-game-dev-skill
 mkdir -p ~/.claude/skills
-ln -s ~/.local/share/unity-game-dev-skill ~/.claude/skills/unity-game-dev
+ln -s /absolute/path/to/unity-game-dev-skill ~/.claude/skills/unity-game-dev
 ```
 
-If the repository is private, authenticate Git before cloning. Replace an
-existing destination intentionally rather than overwriting it blindly, then
-restart Claude Code so skill discovery is refreshed.
+Do not overwrite an existing destination. This optional link does not replace
+the `~/.agents/skills/unity-game-dev` link used by Codex.
