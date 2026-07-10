@@ -12,47 +12,52 @@ isolated in provider adapters.
 
 ## Install
 
-Keep one stable clone of this repository and link its root into the harness'
-user skill directory. Do not maintain separate copied packages: the symlinks
-keep installed harnesses on the same revision.
-
-### Codex
+Install the skill at user scope with the
+[`skills` CLI](https://github.com/vercel-labs/skills):
 
 ```bash
-mkdir -p ~/.agents/skills
-ln -s /absolute/path/to/unity-game-dev-skill ~/.agents/skills/unity-game-dev
+npx skills add gigio1023/unity-game-dev-skill --global
 ```
 
-Do not run `ln -s` over an existing file, directory, or link. Inspect an
-existing destination first:
+The interactive flow lets you choose Codex, Claude Code, or both. Keep the
+default symlink mode when installing for both harnesses so they share one
+managed package. The repository root contains exactly one installable skill, so
+no subdirectory or `--skill` argument is required.
+
+For a non-interactive cross-harness install:
 
 ```bash
-test -L ~/.agents/skills/unity-game-dev
-readlink ~/.agents/skills/unity-game-dev
+npx skills add gigio1023/unity-game-dev-skill \
+  --global \
+  --agent codex \
+  --agent claude-code \
+  --yes
 ```
 
-Codex automatically discovers skill folders under `~/.agents/skills` and
-follows symlinks. No `AGENTS.md` declaration, copy, `npx skills add`
-installation, or `~/.codex/skills` directory is required. Start a new task or
-refresh skill discovery if Codex built its available-skill list before the link
-was created. See the [Codex installation notes](.codex/INSTALL.md).
+The CLI manages the canonical package and harness links. With the current CLI,
+Codex uses `~/.agents/skills/unity-game-dev`; Claude Code receives its supported
+user-level installation or symlink. Follow the paths printed by the command
+rather than creating links by hand.
 
-### Claude Code
-
-For Claude Code, link the same repository root separately:
-
-```bash
-mkdir -p ~/.claude/skills
-ln -s /absolute/path/to/unity-game-dev-skill ~/.claude/skills/unity-game-dev
-```
-
-This does not replace the Codex link. See the
+To target only one harness, pass either `--agent codex` or
+`--agent claude-code`. See the [Codex installation notes](.codex/INSTALL.md) and
 [Claude Code installation notes](.claude/INSTALL.md).
 
+Verify or update the managed installation with:
+
+```bash
+npx skills list --global
+npx skills update unity-game-dev --global
+```
+
+Start a new task or refresh skill discovery if a harness built its skill list
+before installation. Codex does not require an `AGENTS.md` declaration for this
+user-level skill.
+
 Unity Assistant uses its own skill locations and permission model. It does not
-discover either user-level link above. Supporting Unity Assistant is an
-optional, separate installation target—not part of the normal Codex or Claude
-Code setup. See
+discover the Codex or Claude Code installation above. Supporting Unity
+Assistant is an optional, separate installation target—not part of the normal
+Codex or Claude Code setup. See
 [Unity Assistant skills as an optional runtime](references/ai-and-agent-workflows.md#unity-assistant-skills-as-an-optional-runtime).
 
 ## What the skill does
@@ -146,9 +151,9 @@ The installable package remains at the repository root. Research clones live
 under the ignored `.research/build/` directory so upstream `SKILL.md` files do
 not become package entries.
 
-## Validate
+## Validate the package
 
-From the repository root, verify package discovery:
+Maintainers can verify package discovery from the repository root:
 
 ```bash
 npx skills add . --list
