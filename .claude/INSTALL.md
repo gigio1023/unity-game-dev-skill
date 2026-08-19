@@ -1,10 +1,15 @@
 # Install for Claude Code
 
-Install the published repository at user scope with the `skills` CLI:
+Select Claude Code as the link target with the `skills` CLI:
 
 ```bash
 npx skills add gigio1023/unity-game-dev-skill --global --agent claude-code
 ```
+
+The default symlink mode selects a link target; it does not isolate the
+package. Codex also discovers the canonical
+`~/.agents/skills/unity-game-dev` package. Use `--copy` when a separate Claude
+Code installation is actually required.
 
 Confirm the managed installation with:
 

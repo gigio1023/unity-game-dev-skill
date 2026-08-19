@@ -39,9 +39,13 @@ Codex uses `~/.agents/skills/unity-game-dev`; Claude Code receives its supported
 user-level installation or symlink. Follow the paths printed by the command
 rather than creating links by hand.
 
-To target only one harness, pass either `--agent codex` or
-`--agent claude-code`. See the [Codex installation notes](.codex/INSTALL.md) and
-[Claude Code installation notes](.claude/INSTALL.md).
+To select a harness link target, pass either `--agent codex` or
+`--agent claude-code`. In the default symlink mode, that selection does not
+isolate the package: `--agent claude-code` installs the canonical package under
+`~/.agents/skills`, which Codex also discovers. Use `--copy` when separate
+harness installations are actually required. See the
+[Codex installation notes](.codex/INSTALL.md) and [Claude Code installation
+notes](.claude/INSTALL.md).
 
 Verify or update the managed installation with:
 
