@@ -1,24 +1,25 @@
-# Link for Codex
+# Install for Codex
 
-From a stable clone of this repository, create a user-level skill symlink:
-
-```bash
-mkdir -p ~/.agents/skills
-ln -s /absolute/path/to/unity-game-dev-skill ~/.agents/skills/unity-game-dev
-```
-
-Do not overwrite an existing file or directory. For an existing symlink, inspect
-the target before replacing it:
+Install the published repository at user scope with the `skills` CLI:
 
 ```bash
-test -L ~/.agents/skills/unity-game-dev
-readlink ~/.agents/skills/unity-game-dev
+npx skills add gigio1023/unity-game-dev-skill --global --agent codex
 ```
 
-Codex automatically scans `$HOME/.agents/skills` and follows symlinked skill
-folders. The repository root contains `SKILL.md`, so the link target is the
-installable package; no copy, `npx` installation, or `~/.codex/skills` path is
-needed.
+The CLI installs the single `unity-game-dev` package into its canonical Codex
+location. Confirm the managed installation with:
 
-Open a new task or refresh skill discovery after creating the link if the
-current task's available-skill list was established before installation.
+```bash
+npx skills list --global --agent codex
+```
+
+Codex automatically discovers the installed user skill; no `AGENTS.md`
+declaration or manual symlink is required. Use `--yes` only when a
+non-interactive install is intended and replacing an existing managed
+destination is acceptable.
+
+Codex consumes the canonical `~/.agents/skills` installation directly, so
+`skills list` does not need to report a separate Codex symlink.
+
+Open a new task or refresh skill discovery if the current task's available-skill
+list was established before installation.

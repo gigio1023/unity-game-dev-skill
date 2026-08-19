@@ -1,15 +1,19 @@
 # Claude Code
 
-The primary local setup is the Codex `~/.agents/skills` symlink. For an
-explicit Claude Code evaluation, link the same repository root separately:
+Select Claude Code as the CLI link target:
 
 ```bash
-mkdir -p ~/.claude/skills
-ln -s /absolute/path/to/unity-game-dev-skill ~/.claude/skills/unity-game-dev
+npx skills add gigio1023/unity-game-dev-skill --global --agent claude-code
 ```
+
+The default symlink mode is link-target selection, not harness isolation:
+Codex also discovers the canonical `~/.agents/skills/unity-game-dev` package.
+Use `--copy` when a separate Claude Code installation is actually required.
 
 The shared `SKILL.md` contains no Claude-only invocation, hook, tool, or
 subagent requirement. Optional Editor providers are documented under
 `adapters/`.
 
-For manual installation, follow [`.claude/INSTALL.md`](../.claude/INSTALL.md).
+For a shared Codex and Claude Code installation, use the cross-harness command
+in the repository README. For verification and refresh notes, follow
+[`.claude/INSTALL.md`](../.claude/INSTALL.md).
