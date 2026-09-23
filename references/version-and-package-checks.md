@@ -37,7 +37,13 @@ agent research. Do not expose subscription, paid, or confidential Unity source
 to a coding assistant unless current source-code terms and organization policy
 explicitly authorize that use.
 
-As of 2026-09-23, Unity 6.3 LTS (supported until December 2027) and Unity 6.0 LTS (supported through October 2026) are the LTS lines, Unity 6.6 is the current Supported Update release, and Unity 6.7 is in beta. A Supported Update release is supported only until the next release ships; see Unity's [release support policy](https://unity.com/releases/unity-6/support). This is routing context, not an upgrade instruction: always inspect the project's exact editor patch and package lock before choosing an API or migration path.
+As of 2026-09-23, Unity 6.3 LTS (supported until December 2027) and Unity 6.0
+LTS (supported through October 2026) are the LTS lines, Unity 6.6 is the current
+Supported Update release, and Unity 6.7 is in beta. A Supported Update release
+is supported only until the next release ships; see Unity's [release support
+policy](https://unity.com/releases/unity-6/support). This is routing context,
+not an upgrade instruction: always inspect the project's exact editor patch and
+package lock before choosing an API or migration path.
 
 ## Frequent traps
 
@@ -77,14 +83,29 @@ custom-pass APIs can change between package releases.
 
 ### Object identity from Unity 6.2 onward
 
-Unity introduced `EntityId` in 6.2, expanded deprecations in 6.3–6.4, and makes more old integer-ID use fail in 6.5. Unity 6.6 (6000.6.0f1) deprecates `EntityId`'s implicit conversions to and from `int`, `EntityId.Equals(int)`, the `InstanceID` struct, `Object.GetInstanceID`, and many remaining int-ID overloads, because `EntityId` will stop being representable as an `int`. Route code by the exact patch rather than a single cutoff. Neither `InstanceID` nor `EntityId` is a durable serialized identity: do not persist either across Editor sessions or domain reloads, cast IDs to `int`, or use sign/sort order as semantics. Reacquire current handles after reload. For persistence, use `GlobalObjectId` only within its documented lifetime, an asset GUID plus local file ID, a scene path, or another locator the exact Unity/provider version documents as stable.
+Unity introduced `EntityId` in 6.2, expanded deprecations in 6.3–6.4, and makes
+more old integer-ID use fail in 6.5. Unity 6.6 (6000.6.0f1) deprecates
+`EntityId`'s implicit conversions to and from `int`, `EntityId.Equals(int)`, the
+`InstanceID` struct, `Object.GetInstanceID`, and many remaining int-ID
+overloads, because `EntityId` will stop being representable as an `int`. Route
+code by the exact patch rather than a single cutoff. Neither `InstanceID` nor
+`EntityId` is a durable serialized identity: do not persist either across Editor
+sessions or domain reloads, cast IDs to `int`, or use sign/sort order as
+semantics. Reacquire current handles after reload. For persistence, use
+`GlobalObjectId` only within its documented lifetime, an asset GUID plus local
+file ID, a scene path, or another locator the exact Unity/provider version
+documents as stable.
 
 ### Unity authoring and runtime AI
 
 Treat these as separate stacks:
 
-- `com.unity.ai.assistant`: Editor authoring, Assistant, Gateway, the Unity MCP server (deprecated from 2.18), generators, and Unity Assistant skills; availability and entitlement are not implied by Unity 6 alone.
-- `com.unity.pipeline`: the experimental package through which the Unity CLI drives a running Editor. It is separate from `com.unity.ai.assistant`, and Unity documents the CLI as free and not requiring a Unity AI subscription.
+- `com.unity.ai.assistant`: Editor authoring, Assistant, Gateway, the Unity MCP
+  server (deprecated from 2.18), generators, and Unity Assistant skills;
+  availability and entitlement are not implied by Unity 6 alone.
+- `com.unity.pipeline`: the experimental package through which the Unity CLI
+  drives a running Editor. It is separate from `com.unity.ai.assistant`, and
+  Unity documents the CLI as free and not requiring a Unity AI subscription.
 - `com.unity.ai.inference`: Sentis runtime inference. Current 2.x code can use
   the `Unity.InferenceEngine` namespace even when Package Manager displays
   “Sentis.”
@@ -98,4 +119,12 @@ Do not migrate package IDs or namespaces from product naming alone.
 
 ### Editor-control providers
 
-Confirm connection, provider version, available commands, and the loaded project instead of treating an MCP server as part of Unity itself. Provider availability does not prove that the Editor is idle, compiled, entitled, authorized by current project policy, or safe to mutate. For the Unity CLI, check the CLI version, the resolved `com.unity.pipeline` version, and the commands the connected Editor lists. For the deprecated Assistant MCP server, check the installed Assistant version and access requirements. For community providers, also check the exact release, enabled tool groups, transport, object-ID strategy, package provenance, and current Unity Core Standards guidance.
+Confirm connection, provider version, available commands, and the loaded project
+instead of treating an MCP server as part of Unity itself. Provider availability
+does not prove that the Editor is idle, compiled, entitled, authorized by
+current project policy, or safe to mutate. For the Unity CLI, check the CLI
+version, the resolved `com.unity.pipeline` version, and the commands the
+connected Editor lists. For the deprecated Assistant MCP server, check the
+installed Assistant version and access requirements. For community providers,
+also check the exact release, enabled tool groups, transport, object-ID
+strategy, package provenance, and current Unity Core Standards guidance.

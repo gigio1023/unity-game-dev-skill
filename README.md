@@ -87,13 +87,19 @@ UI, audio, animation, scenes and prefabs, serialization, rendering pipelines,
 builds, source control, and asset licensing. It also distinguishes three Unity
 AI concerns that require different workflows:
 
-- authoring agents: Unity Assistant, the Unity CLI, MCP, AI Gateway, and connected Editor automation;
+- authoring agents: Unity Assistant, the Unity CLI, MCP, AI Gateway, and
+  connected Editor automation;
 - runtime inference: the project's installed Sentis/Inference Engine package
   and model formats;
 - training gameplay agents: ML-Agents' Unity environment, Python trainer, and
   exported inference model.
 
-The skill is version-aware through Unity 6 release lines, including Unity 6.6, the current Supported Update release as of 2026-09-23, but never treats “latest” as an instruction to upgrade. The target project's exact Editor patch, package versions, settings, and supported release line remain authoritative. See [version and package checks](references/version-and-package-checks.md) and [AI and agent workflows](references/ai-and-agent-workflows.md).
+The skill is version-aware through Unity 6 release lines, including Unity 6.6,
+the current Supported Update release as of 2026-09-23, but never treats “latest”
+as an instruction to upgrade. The target project's exact Editor patch, package
+versions, settings, and supported release line remain authoritative. See
+[version and package checks](references/version-and-package-checks.md) and [AI
+and agent workflows](references/ai-and-agent-workflows.md).
 
 It is not a general game-design advisor, an ordinary C# or machine-learning
 skill, a standalone asset generator, or guidance for contributing to Unity's
@@ -107,8 +113,17 @@ mutate objects, save intended assets, read logs—rather than hard-coding one
 provider's tool names. Use an adapter only when that provider is already
 configured or the user has authorized its setup.
 
-- [Unity CLI](adapters/unity-cli.md) is Unity's official, still experimental replacement for the Assistant package's MCP server. It drives Unity 6.0+ Editors through the Unity Pipeline package, either with direct `unity command` and `unity eval` calls or as an MCP server through `unity mcp`. Installing the CLI or the Pipeline package, configuring a client, and installing the CLI's own agent skill each need authorization.
-- [Unity Assistant MCP](adapters/unity-ai-mcp.md) covers projects already connected through the MCP server in `com.unity.ai.assistant`, which Unity deprecated from Assistant 2.18. A direct MCP client starts Unity's relay, and the first connection requires user approval. Discover the live tool surface instead of assuming built-in tool names remain fixed.
+- [Unity CLI](adapters/unity-cli.md) is Unity's official, still experimental
+  replacement for the Assistant package's MCP server. It drives Unity 6.0+
+  Editors through the Unity Pipeline package, either with direct `unity command`
+  and `unity eval` calls or as an MCP server through `unity mcp`. Installing the
+  CLI or the Pipeline package, configuring a client, and installing the CLI's
+  own agent skill each need authorization.
+- [Unity Assistant MCP](adapters/unity-ai-mcp.md) covers projects already
+  connected through the MCP server in `com.unity.ai.assistant`, which Unity
+  deprecated from Assistant 2.18. A direct MCP client starts Unity's relay, and
+  the first connection requires user approval. Discover the live tool surface
+  instead of assuming built-in tool names remain fixed.
 - [Coplay Unity MCP](adapters/coplay-unity-mcp.md) documents the current
   provider-specific setup, capability discovery, and diagnostic workflow for
   projects that use Coplay.
