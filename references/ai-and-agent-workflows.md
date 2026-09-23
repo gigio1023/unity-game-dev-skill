@@ -5,9 +5,7 @@ generated assets, on-device neural inference, or ML-Agents training. These are
 different systems with different package, data, runtime, and validation
 boundaries.
 
-Sources reviewed 2026-07-10. Unity Assistant 2.11 documentation is pre-release,
-so the project's manifest, lock file, package-local documentation, and current
-terms outrank the versions summarized here.
+Sources reviewed 2026-07-10; the authoring-agent, Assistant-skill, and ML-Agents sources were rechecked on 2026-09-23 against Unity Assistant 2.19, Unity CLI, and ML-Agents 4.1 documentation. Assistant documentation is pre-release and the Unity CLI is experimental, so the project's manifest, lock file, package-local documentation, and current terms outrank the versions summarized here.
 
 ## Contents
 
@@ -25,7 +23,7 @@ terms outrank the versions summarized here.
 
 | User outcome | Unity system | Runs where | Do not confuse with |
 | --- | --- | --- | --- |
-| Inspect or modify a project with an authoring agent | Assistant, AI Gateway, or Unity MCP | Editor and optional external client/service | Runtime game AI |
+| Inspect or modify a project with an authoring agent | Assistant, AI Gateway, Unity CLI, or the deprecated Unity MCP server | Editor and optional external client/service | Runtime game AI |
 | Generate prototype sprites, textures, audio, animation, or layouts | Unity AI Generators | Editor plus generation service | A cleared shipping asset |
 | Run a trained neural network in a player | Sentis | Unity runtime on the target device | Model training |
 | Train a policy from observations, actions, and rewards | ML-Agents Toolkit | Unity environment plus Python trainer | Assistant or MCP automation |
@@ -67,17 +65,13 @@ Unity AI's authoring surfaces are related but not interchangeable:
   window using the provider's own authentication. It is a hosted/in-Editor
   routing experience, not the same session as an independently launched Codex
   or Claude Code client.
-- **Unity MCP** exposes the Editor as an MCP server to an external client through
-  Unity's local relay and bridge. Apply the official adapter's connection and
-  mutation gates.
+- **Unity CLI** (`unity`) drives a running Unity 6.0+ Editor through the experimental Unity Pipeline package, either with direct `unity command` and `unity eval` calls or as an MCP server through `unity mcp`. Unity names it the replacement for the Assistant package's MCP server; apply the setup and mutation gates in the [Unity CLI adapter](../adapters/unity-cli.md).
+- **Unity MCP server** in the Assistant package exposes the Editor to an external MCP client through Unity's local relay and bridge. Unity deprecated it from Assistant 2.18; keep it only for projects already connected through it, and apply the connection and mutation gates in the [Assistant MCP adapter](../adapters/unity-ai-mcp.md).
 - **Generators** create prototype assets from prompts or references. They have
   service, model, provenance, rights, and disclosure considerations beyond a
   normal local asset import.
 
-The current integration map is in [Integrate models, skills, and tools](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.11/manual/integration/integration-landing.html).
-The [AI Gateway overview](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.11/manual/integration/ai-gateway-intro.html)
-and [Unity MCP overview](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.11/manual/integration/unity-mcp-overview.html)
-define the two distinct connection paths.
+The current integration map is in [Integrate models, skills, and tools](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.19/manual/integration/integration-landing.html). The [AI Gateway overview](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.19/manual/integration/ai-gateway-intro.html) and [Unity MCP overview](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.19/manual/integration/unity-mcp-overview.html) define the Assistant package's two connection paths, and [Unity CLI as the replacement for the in-Editor MCP server](https://docs.unity.com/en-us/unity-cli/replace-mcp-server-unity-cli) covers the move to the CLI.
 
 Do not promise that a particular provider, model, command, built-in tool name,
 credit policy, or entitlement remains available. Inspect the current package UI
@@ -86,10 +80,7 @@ store rather than project files, prompts, logs, or skill resources.
 
 ## Unity Assistant skills as an optional runtime
 
-Unity Assistant 2.11 can discover filesystem skills built around `SKILL.md` and
-progressive disclosure. This makes Unity Assistant a possible third runtime for
-some skill content, but it does not make a Codex/Claude Code installation
-automatically visible to Unity.
+Unity Assistant 2.19, like 2.11, can discover filesystem skills built around `SKILL.md` and progressive disclosure. This makes Unity Assistant a possible third runtime for some skill content, but it does not make a Codex/Claude Code installation automatically visible to Unity. The Unity CLI's `unity skill install <client>` is a different mechanism: it installs Unity's own CLI skill into an external client such as Codex or Claude Code, not into Assistant.
 
 Assistant scans:
 
@@ -108,8 +99,8 @@ intersection. Do not add Unity-only fields to the common frontmatter or assume
 Unity's built-in actions, custom-tool attributes, installation paths, or
 permission UI exist in either primary harness. If Unity Assistant support is
 packaged later, treat it as a separate adapter/install target and validate it in
-the Editor. See [About skills](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.11/manual/skills/skills-overview.html)
-and [Create skills from the filesystem](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.11/manual/skills/skills-filesystem.html).
+the Editor. See [About skills](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.19/manual/skills/skills-overview.html)
+and [Create skills from the filesystem](https://docs.unity3d.com/Packages/com.unity.ai.assistant%402.19/manual/skills/skills-filesystem.html).
 
 ## Runtime inference with Sentis
 
@@ -155,13 +146,7 @@ defines agents, observations, actions, rewards, behaviors, demonstrations, and
 the environment connection. The companion Python package contains the training
 algorithms. A trained policy can then be embedded for inference through Sentis.
 
-The current 4.0 documentation describes `com.unity.ml-agents` 4.0.3 for Unity
-6000.0 or later and pairs its package-install path with Python 3.10.12 and
-`mlagents==1.1.0`. Those numbers are not a universal 4.x rule: use the project's
-resolved package and its release compatibility table before creating an
-environment. The [ML-Agents overview](https://docs.unity3d.com/Packages/com.unity.ml-agents%404.0/manual/index.html)
-defines the C#/Python boundary; the [installation guide](https://docs.unity3d.com/Packages/com.unity.ml-agents%404.0/manual/Installation.html)
-records the current version pair.
+The current 4.1 documentation describes `com.unity.ml-agents` 4.1.0 for Unity 6000.0 or later and pairs its package-install path with Python 3.10.12 and `mlagents==1.1.0`. Those numbers are not a universal 4.x rule: use the project's resolved package and its release compatibility table before creating an environment. The [ML-Agents overview](https://docs.unity3d.com/Packages/com.unity.ml-agents%404.1/manual/index.html) defines the C#/Python boundary; the [installation guide](https://docs.unity3d.com/Packages/com.unity.ml-agents%404.1/manual/Installation.html) records the current version pair.
 
 For a training change, preserve and validate:
 

@@ -67,5 +67,4 @@ tokens. The exact-toolchain rule in the accepted skill is the bounded fix.
 - The 2026 AI/MCP/runtime-AI cases were added after the recorded run and remain
   frozen but unexecuted in both primary harnesses.
 
-Re-run those cells before claiming cross-harness behavioral parity or live
-Editor compatibility.
+Re-run those cells before claiming cross-harness behavioral parity or live Editor compatibility. Future runs target GPT-6 Sol (`gpt-6-sol`) in Codex CLI 0.156.1 or later and Claude Fable 5.1 in Claude Code. Because the model changes, re-run the no-skill and legacy-skill baselines in the same setup instead of comparing against the 2026-07-10 numbers above.
