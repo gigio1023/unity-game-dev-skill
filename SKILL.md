@@ -40,9 +40,10 @@ Local configuration outranks assumptions. A manifest entry does not prove a
 package is configured, and an asset name does not prove its version or API.
 Preserve the active input backend unless migration is authorized.
 
-Across Unity 6.2–6.5's staged EntityId rollout, treat EntityId as current object
-identity, not a durable reference. Inspect exact APIs, reacquire handles after
-reload/session, and use documented persistent locators where needed.
+From Unity 6.2 onward (6.6 deprecates EntityId's implicit int conversions),
+treat EntityId as current object identity, not a durable reference. Route by the
+exact patch, inspect exact APIs, reacquire handles after reload/session, and use
+documented persistent locators where needed.
 
 Use [version and package checks](references/version-and-package-checks.md) when
 an API depends on Unity, package, render-pipeline, or input configuration.
@@ -63,10 +64,12 @@ template, or project as Unity validation.
 
 ### Connected Editor control
 
-Prefer a provider already approved and configured by the project. Otherwise,
-for eligible Unity 6 projects consider Unity's official MCP path before a new
-community integration. Verify current Unity access requirements and project
-policy before installing or enabling any agentic bridge; do not infer a
+Prefer a provider already approved and configured by the project. A project
+already connected through the Assistant package's Unity MCP server can keep
+using it, but Unity deprecated that server from Assistant 2.18. Otherwise, for
+Unity 6.0 or later projects consider the official, still experimental Unity CLI
+before a new community integration. Verify current Unity access requirements and
+project policy before installing or enabling any agentic bridge; do not infer a
 third-party provider's authorization or package-signing status from popularity.
 
 First verify the connection, project, active scene, play/edit and console state,
@@ -76,9 +79,10 @@ read components, mutate, save, read logs—not assumed tool names.
 For scene or prefab work, inspect, make one bounded mutation, save only intended
 assets, re-inspect references and console, and use Play Mode only when needed.
 
-Provider-specific setup lives in the [official Unity MCP adapter](adapters/unity-ai-mcp.md)
-and [Coplay Unity MCP adapter](adapters/coplay-unity-mcp.md). The core workflow
-must still work when neither provider is available.
+Provider-specific setup lives in the [Unity CLI adapter](adapters/unity-cli.md),
+the [deprecated Unity Assistant MCP adapter](adapters/unity-ai-mcp.md), and the
+[Coplay Unity MCP adapter](adapters/coplay-unity-mcp.md). The core workflow must
+still work when no provider is available.
 
 ## Implementation Rules
 
