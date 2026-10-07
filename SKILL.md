@@ -40,8 +40,8 @@ Local configuration outranks assumptions. A manifest entry does not prove a
 package is configured, and an asset name does not prove its version or API.
 Preserve the active input backend unless migration is authorized.
 
-From Unity 6.2 onward (6.6 deprecates EntityId's implicit int conversions),
-treat EntityId as current object identity, not a durable reference. Route by the
+From Unity 6.2 onward (6.4 makes int-based object identity obsolete and 6.5
+turns obsolete InstanceID APIs into compile errors), treat EntityId as current object identity, not a durable reference. Route by the
 exact patch, inspect exact APIs, reacquire handles after reload/session, and use
 documented persistent locators where needed.
 
