@@ -83,12 +83,17 @@ custom-pass APIs can change between package releases.
 
 ### Object identity from Unity 6.2 onward
 
-Unity introduced `EntityId` in 6.2, expanded deprecations in 6.3–6.4, and makes
-more old integer-ID use fail in 6.5. Unity 6.6 (6000.6.0f1) deprecates
-`EntityId`'s implicit conversions to and from `int`, `EntityId.Equals(int)`, the
-`InstanceID` struct, `Object.GetInstanceID`, and many remaining int-ID
-overloads, because `EntityId` will stop being representable as an `int`. Route
-code by the exact patch rather than a single cutoff. Neither `InstanceID` nor
+Unity introduced `EntityId` in 6.2. From 6.4, Unity replaces the 32-bit
+`InstanceID` with the 64-bit `EntityId` and marks `Object.GetInstanceID`,
+`EntityId`'s implicit conversions to and from `int`, and `EntityId.Equals(int)`
+obsolete, because `EntityId` will stop being representable as an `int`. From
+6.5, obsolete InstanceID APIs cause compilation errors, and code that bypasses
+them (suppressed errors, precompiled assemblies) can silently truncate IDs.
+Unity 6.6 keeps these APIs obsolete. Sources checked 2026-10-07: [Migrate from
+InstanceID to
+EntityId](https://docs.unity3d.com/6000.6/Documentation/Manual/instanceid-to-entityid-migration.html)
+and the 6.3 to 6.6 Scripting API pages for `Object.GetInstanceID` and the
+`EntityId` operators. Route code by the exact patch rather than a single cutoff. Neither `InstanceID` nor
 `EntityId` is a durable serialized identity: do not persist either across Editor
 sessions or domain reloads, cast IDs to `int`, or use sign/sort order as
 semantics. Reacquire current handles after reload. For persistence, use
